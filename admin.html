@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Admin | SuaraWarga</title>
 	<link rel="stylesheet" href="admin.css">
 </head>
+
 <body>
 	<main class="admin-shell">
 		<nav class="admin-nav">
@@ -14,13 +16,14 @@
 				<span>SuaraWarga <small style="color:var(--muted);font-size:10px">/ ADMIN</small></span>
 			</div>
 			<a class="back-link" href="index.html">← Halaman warga</a>
-			<button class="back-link hidden" id="logoutBtn" type="button" style="border:0;background:none;cursor:pointer">Keluar</button>
+			<button class="back-link hidden" id="logoutBtn" type="button"
+				style="border:0;background:none;cursor:pointer">Keluar</button>
 		</nav>
 		<section class="panel login-gate" id="gateView">
 			<div class="card-title">
 				<div class="mono">Akses terbatas</div>
 				<h1>Masuk sebagai admin</h1>
-				
+
 			</div>
 			<form id="gateForm">
 				<div class="field">
@@ -41,7 +44,7 @@
 					<p class="subhead">Kelola informasi yang akan dilihat warga secara terkontrol.</p>
 				</div>
 			</header>
-			
+
 			<div class="admin-grid">
 				<!-- 1. SESSION CONTROL PANEL -->
 				<section class="panel full-panel">
@@ -68,16 +71,23 @@
 					<form id="candidateForm">
 						<div class="field">
 							<label for="candidatePhoto">Link foto (Google Drive atau URL gambar)</label>
-							<input id="candidatePhoto" type="text" placeholder="Tempel link share Google Drive, atau URL gambar" autocomplete="off">
-							<p class="helper" style="margin-top:6px;font-size:11px;color:var(--muted,#8a8a8a);line-height:1.5;">
+							<input id="candidatePhoto" type="text"
+								placeholder="Tempel link share Google Drive, atau URL gambar" autocomplete="off">
+							<p class="helper"
+								style="margin-top:6px;font-size:11px;color:var(--muted,#8a8a8a);line-height:1.5;">
 								Upload foto ke folder Drive kamu → klik kanan foto → Share → Copy link → tempel di sini.
 							</p>
 
-							<div id="photoPreviewContainer" style="display:none; margin-top:10px; align-items:center; gap:12px;">
-								<img id="photoPreview" alt="Preview Foto" style="width:52px; height:52px; border-radius:8px; object-fit:cover; border:1px solid var(--line); background:#f2f2f2;">
+							<div id="photoPreviewContainer"
+								style="display:none; margin-top:10px; align-items:center; gap:12px;">
+								<img id="photoPreview" alt="Preview Foto"
+									style="width:52px; height:52px; border-radius:8px; object-fit:cover; border:1px solid var(--line); background:#f2f2f2;">
 								<div>
-									<div id="photoPreviewName" style="font-size:11px; font-weight:600; color:var(--ink);"></div>
-									<button type="button" id="removePhotoBtn" class="btn secondary small" style="margin-top:4px; padding:3px 8px; font-size:10px; color:#ad4939;">Hapus link foto</button>
+									<div id="photoPreviewName"
+										style="font-size:11px; font-weight:600; color:var(--ink);"></div>
+									<button type="button" id="removePhotoBtn" class="btn secondary small"
+										style="margin-top:4px; padding:3px 8px; font-size:10px; color:#ad4939;">Hapus
+										link foto</button>
 								</div>
 							</div>
 						</div>
@@ -92,7 +102,8 @@
 							</div>
 							<div class="field full">
 								<label for="candidateMission">Misi</label>
-								<textarea id="candidateMission" required rows="3" style="width:100%;border:1px solid var(--line);border-radius:7px;padding:11px 12px;resize:vertical;color:var(--ink);font:inherit;font-size:12px"></textarea>
+								<textarea id="candidateMission" required rows="3"
+									style="width:100%;border:1px solid var(--line);border-radius:7px;padding:11px 12px;resize:vertical;color:var(--ink);font:inherit;font-size:12px"></textarea>
 							</div>
 						</div>
 						<div class="form-actions" style="margin-top:14px; display:flex; gap:10px;">
@@ -129,7 +140,8 @@
 							<h2>Daftar calon</h2>
 						</div>
 						<div class="action-row">
-							<button class="btn secondary small" id="exportCandidates" type="button">Export Excel</button>
+							<button class="btn secondary small" id="exportCandidates" type="button">Export
+								Excel</button>
 						</div>
 					</div>
 					<div class="admin-table">
@@ -144,7 +156,9 @@
 								</tr>
 							</thead>
 							<tbody id="candidateTable">
-								<tr><td colspan="5" class="empty">Memuat data...</td></tr>
+								<tr>
+									<td colspan="5" class="empty">Memuat data...</td>
+								</tr>
 							</tbody>
 						</table>
 					</div>
@@ -157,9 +171,17 @@
 							<div class="mono">Database warga</div>
 							<h2>Daftar warga terdaftar</h2>
 						</div>
-						<div class="action-row">
-							<span class="status" id="voterCount">0 warga</span>
-							<button class="btn secondary small" id="exportVoters" type="button">Export Excel</button>
+						<div class="voter-actions">
+							<label class="search-field" for="voterSearch">
+								<span class="sr-only">Cari nama warga</span>
+								<input id="voterSearch" type="search" placeholder="Cari nama warga..."
+									autocomplete="off">
+							</label>
+							<div class="action-row">
+								<span class="status" id="voterCount">0 warga</span>
+								<button class="btn secondary small" id="exportVoters" type="button">Export
+									Excel</button>
+							</div>
 						</div>
 					</div>
 					<div class="admin-table">
@@ -173,7 +195,9 @@
 								</tr>
 							</thead>
 							<tbody id="voterTable">
-								<tr><td colspan="4" class="empty">Memuat data...</td></tr>
+								<tr>
+									<td colspan="4" class="empty">Memuat data...</td>
+								</tr>
 							</tbody>
 						</table>
 					</div>
@@ -187,10 +211,10 @@
 		// ── Config ──
 		const API_URL = 'https://script.google.com/macros/s/AKfycbxts7nzr4eZdcXMXD_vbL05oRWOTrKho70G7GNxYwW4OASXPcl6G3mPeaVa6WRQ2IvNrQ/exec';
 		const $ = id => document.getElementById(id);
-		const toast = (msg) => { 
-			$('toast').textContent = msg; 
-			$('toast').classList.add('show'); 
-			setTimeout(() => $('toast').classList.remove('show'), 3000); 
+		const toast = (msg) => {
+			$('toast').textContent = msg;
+			$('toast').classList.add('show');
+			setTimeout(() => $('toast').classList.remove('show'), 3000);
 		};
 		const initials = name => (name || '').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 
@@ -211,9 +235,9 @@
 			return res.json();
 		}
 		async function apiPost(payload) {
-			const res = await fetch(API_URL, { 
-				method: 'POST', 
-				body: JSON.stringify({ ...payload, adminKey: ADMIN_KEY }) 
+			const res = await fetch(API_URL, {
+				method: 'POST',
+				body: JSON.stringify({ ...payload, adminKey: ADMIN_KEY })
 			});
 			return res.json();
 		}
@@ -323,16 +347,16 @@
 			}
 		}
 
-		async function toggleSesi() { 
+		async function toggleSesi() {
 			const btn = $('toggleSesiBtn');
 			btn.disabled = true;
 			btn.textContent = 'Memproses...';
-			
+
 			try {
 				const response = await apiPost({ action: 'toggleSesi' });
 				if (response.success || response.status === 'success') {
-					sesiStatus = (response.status === 'buka' || response.status === 'tutup') 
-						? response.status 
+					sesiStatus = (response.status === 'buka' || response.status === 'tutup')
+						? response.status
 						: (sesiStatus === 'buka' ? 'tutup' : 'buka');
 					renderSesi();
 					toast(`Sesi voting berhasil ${sesiStatus === 'buka' ? 'dibuka' : 'ditutup'}.`);
@@ -358,25 +382,25 @@
 				badge.textContent = '● Sesi Dibuka';
 				badge.style.backgroundColor = 'var(--green, #d1f5d3)';
 				badge.style.color = '#ffffff';
-				
+
 				btn.textContent = 'Tutup Sesi Voting';
 				btn.className = 'btn danger';
-				
+
 				desc.textContent = 'Warga dapat melakukan login dan memberikan suara mereka saat ini.';
 			} else {
 				badge.textContent = 'Sesi Ditutup';
 				badge.style.backgroundColor = 'var(--coral, #fce4e4)';
 				badge.style.color = '#ffffff';
-				
+
 				btn.textContent = 'Buka Sesi Voting';
-				btn.className = 'btn'; 
-				
+				btn.className = 'btn';
+
 				desc.textContent = 'Warga tidak dapat melakukan login. Buka sesi agar warga mulai bisa memilih.';
 			}
 		}
 
 		// ── Candidate CRUD ──
-		async function loadCalon() { 
+		async function loadCalon() {
 			try {
 				const response = await apiGet('getCalon');
 				candidates = response.calon || response.data || [];
@@ -393,12 +417,12 @@
 				tbody.innerHTML = '<tr><td colspan="5" class="empty">Belum ada calon.</td></tr>';
 				return;
 			}
-			
+
 			tbody.innerHTML = candidates.map(candidate => {
-				const photoHtml = candidate.foto 
-					? `<img src="${candidate.foto}" alt="Foto ${candidate.nama}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;">` 
+				const photoHtml = candidate.foto
+					? `<img src="${candidate.foto}" alt="Foto ${candidate.nama}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;">`
 					: `<span class="avatar" style="display:inline-grid;width:40px;height:40px;vertical-align:middle;margin-right:10px;">${initials(candidate.nama)}</span>`;
-					
+
 				return `
 					<tr>
 						<td>${photoHtml} <strong>${candidate.nama}</strong></td>
@@ -419,36 +443,36 @@
 		function editCalonUI(noUrut) {
 			const candidate = candidates.find(c => c.noUrut === noUrut);
 			if (!candidate) return;
-			
+
 			candidateEditing = noUrut;
-			
+
 			$('candidateName').value = candidate.nama || '';
 			$('candidateVision').value = candidate.visi || '';
 			$('candidateMission').value = candidate.misi || '';
 			$('candidatePhoto').value = candidate.foto || '';
 			updatePhotoPreview();
-			
+
 			$('candidateFormTitle').textContent = 'Edit calon';
 			$('candidateSubmit').textContent = 'Simpan perubahan';
 			$('cancelCandidate').hidden = false;
-			
+
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 
 		async function submitCalon(e) {
 			e.preventDefault();
-			
+
 			const btn = $('candidateSubmit');
 			btn.disabled = true;
 			btn.textContent = 'Menyimpan...';
-			
+
 			const payload = {
 				nama: $('candidateName').value.trim(),
 				visi: $('candidateVision').value.trim(),
 				misi: $('candidateMission').value.trim(),
 				foto: $('candidatePhoto').value.trim()
 			};
-			
+
 			try {
 				if (candidateEditing) {
 					payload.action = 'editCalon';
@@ -456,9 +480,9 @@
 				} else {
 					payload.action = 'tambahCalon';
 				}
-				
+
 				const response = await apiPost(payload);
-				
+
 				if (response.success || response.status === 'success') {
 					let msg = candidateEditing ? 'Data calon diperbarui.' : 'Calon baru berhasil ditambahkan.';
 					if (response.fotoWarning) msg += ' ⚠ ' + response.fotoWarning;
@@ -479,7 +503,7 @@
 
 		async function deleteCalonAPI(noUrut) {
 			if (!confirm('Yakin ingin menghapus calon ini?')) return;
-			
+
 			try {
 				const response = await apiPost({ action: 'hapusCalon', noUrut: noUrut });
 				if (response.success || response.status === 'success') {
@@ -505,7 +529,7 @@
 		}
 
 		// ── Voter CRUD ──
-		async function loadVoters() { 
+		async function loadVoters() {
 			try {
 				const response = await apiGet('getVoters', { adminKey: ADMIN_KEY });
 				voters = response.voters || response.data || [];
@@ -518,14 +542,24 @@
 
 		function renderVoters() {
 			const tbody = $('voterTable');
-			$('voterCount').textContent = `${voters.length} warga`;
-			
+			const searchTerm = $('voterSearch').value.trim().toLocaleLowerCase();
+			const filteredVoters = searchTerm
+				? voters.filter(voter => String(voter.nama || '').toLocaleLowerCase().includes(searchTerm))
+				: voters;
+			$('voterCount').textContent = searchTerm
+				? `${filteredVoters.length} dari ${voters.length} warga`
+				: `${voters.length} warga`;
+
 			if (!voters.length) {
 				tbody.innerHTML = '<tr><td colspan="4" class="empty">Belum ada warga terdaftar.</td></tr>';
 				return;
 			}
-			
-			tbody.innerHTML = voters.map(voter => `
+			if (!filteredVoters.length) {
+				tbody.innerHTML = '<tr><td colspan="4" class="empty">Nama warga tidak ditemukan.</td></tr>';
+				return;
+			}
+
+			tbody.innerHTML = filteredVoters.map(voter => `
 				<tr>
 					<td><strong>${voter.nama}</strong></td>
 					<td><code style="font-family:monospace;letter-spacing:1px;background:var(--paper, #f0f0f0);padding:2px 6px;border-radius:4px;border:1px solid var(--line, #ddd);">${voter.kode}</code></td>
@@ -543,10 +577,10 @@
 		function editVoterUI(kode) {
 			const voter = voters.find(v => v.kode === kode);
 			if (!voter) return;
-			
+
 			voterEditing = kode;
 			$('voterName').value = voter.nama || '';
-			
+
 			$('voterFormTitle').textContent = 'Edit warga';
 			$('voterSubmit').textContent = 'Simpan perubahan';
 			$('cancelVoter').hidden = false;
@@ -554,15 +588,15 @@
 
 		async function submitVoter(e) {
 			e.preventDefault();
-			
+
 			const btn = $('voterSubmit');
 			btn.disabled = true;
 			btn.textContent = 'Menyimpan...';
-			
+
 			const payload = {
 				nama: $('voterName').value.trim()
 			};
-			
+
 			try {
 				if (voterEditing) {
 					payload.action = 'editVoter';
@@ -570,9 +604,9 @@
 				} else {
 					payload.action = 'tambahVoter';
 				}
-				
+
 				const response = await apiPost(payload);
-				
+
 				if (response.success || response.status === 'success') {
 					if (!voterEditing && response.kode) {
 						toast(`Warga ditambahkan. Kode unik: ${response.kode}`);
@@ -595,7 +629,7 @@
 
 		async function deleteVoterAPI(kode) {
 			if (!confirm('Yakin ingin menghapus warga ini?')) return;
-			
+
 			try {
 				const response = await apiPost({ action: 'hapusVoter', kode: kode });
 				if (response.success || response.status === 'success') {
@@ -619,24 +653,24 @@
 		}
 
 		// ── Export ──
-		function downloadCsv(filename, headers, rows) { 
-			const escapeCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`; 
-			const csv = '\ufeff' + [headers, ...rows].map(row => row.map(escapeCell).join(',')).join('\r\n'); 
-			const link = document.createElement('a'); 
-			link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); 
-			link.download = filename; 
-			link.click(); 
-			URL.revokeObjectURL(link.href); 
+		function downloadCsv(filename, headers, rows) {
+			const escapeCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+			const csv = '\ufeff' + [headers, ...rows].map(row => row.map(escapeCell).join(',')).join('\r\n');
+			const link = document.createElement('a');
+			link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+			link.download = filename;
+			link.click();
+			URL.revokeObjectURL(link.href);
 		}
-		
+
 		function exportCandidates() {
-			downloadCsv('data-calon.csv', 
+			downloadCsv('data-calon.csv',
 				['No. Urut', 'Nama Calon', 'Visi', 'Misi', 'Jumlah Suara', 'Foto URL'],
 				candidates.map(c => [c.noUrut, c.nama, c.visi, c.misi, c.suara, c.foto || '-'])
 			);
 			toast('Data calon berhasil diekspor.');
 		}
-		
+
 		function exportVoters() {
 			downloadCsv('data-warga.csv',
 				['Nama Warga', 'Kode Unik', 'Status Voting'],
@@ -651,6 +685,7 @@
 		$('voterForm').addEventListener('submit', submitVoter);
 		$('cancelCandidate').addEventListener('click', resetCalonForm);
 		$('cancelVoter').addEventListener('click', resetVoterForm);
+		$('voterSearch').addEventListener('input', renderVoters);
 		$('exportCandidates').addEventListener('click', exportCandidates);
 		$('exportVoters').addEventListener('click', exportVoters);
 
@@ -666,4 +701,5 @@
 		if (ADMIN_KEY) { showDashboard(); init(); } else { showGate(); }
 	</script>
 </body>
+
 </html>
