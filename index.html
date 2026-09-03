@@ -1,27 +1,64 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SuaraWarga | Pemilu Digital</title>
   <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
   <main class="citizen-shell">
-    <nav class="simple-nav"><div class="brand"><div class="brand-mark">S</div><span>SuaraWarga</span></div></nav>
-    <section class="hero"><div><div class="mono">Pemilu Digital</div><h1>Suara warga,<br>arah bersama.</h1><p class="subhead">Pantau profil calon dan hasil perolehan suara secara live. Pemungutan suara dilakukan di halaman voting terpisah menggunakan nama dan kode unik yang diberikan admin.</p></div><div class="hero-art"><div class="mono" id="sesiBadge" style="color:var(--yellow)">Memuat status sesi…</div><h2 id="heroTotal">Menghitung hasil sementara…</h2><p id="heroLeader" class="hero-leader">- suara</p></div></section>
+    <nav class="simple-nav">
+      <div class="brand">
+        <div class="brand-mark">S</div><span>SuaraWarga</span>
+      </div><a class="admin-link" href="admin.html">Login Admin →</a>
+    </nav>
+    <section class="hero">
+      <div>
+        <div class="mono">Pemilu Digital</div>
+        <h1>Suara warga,<br>arah bersama.</h1>
+        <p class="subhead">Pantau profil calon dan hasil perolehan suara secara live. Pemungutan suara dilakukan di
+          halaman voting terpisah menggunakan nama dan kode unik yang diberikan admin.</p>
+      </div>
+      <div class="hero-art">
+        <div class="mono" id="sesiBadge" style="color:var(--yellow)">Memuat status sesi…</div>
+        <h2 id="heroTotal">Menghitung hasil sementara…</h2>
+        <p id="heroLeader" class="hero-leader">- suara</p>
+      </div>
+    </section>
     <section class="content-grid">
       <div class="panel registration-card" id="statusPanel">
-        <div class="card-title"><div class="mono">Status voting</div><h2>Ikut memilih?</h2><p id="sesiText">Memuat status sesi voting…</p></div>
+        <div class="card-title">
+          <div class="mono">Status voting</div>
+          <h2>Ikut memilih?</h2>
+          <p id="sesiText">Memuat status sesi voting…</p>
+        </div>
         <div class="form-actions" style="justify-content:flex-start">
           <a class="btn hidden" id="voteCta" href="voting.html">Ke halaman voting →</a>
         </div>
         <p class="helper">Belum terdaftar atau lupa kode unik? Hubungi admin untuk pendataan.</p>
       </div>
-      <div class="panel"><div class="panel-heading"><div><div class="mono">Kenali calon</div><h2>Calon</h2><p>Pelajari visi dan misi sebelum menentukan pilihan.</p></div><span class="live-badge"><i class="live-dot"></i> Live</span></div><div class="candidate-grid" id="candidateList"></div></div>
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <div class="mono">Kenali calon</div>
+            <h2>Calon</h2>
+            <p>Pelajari visi dan misi sebelum menentukan pilihan.</p>
+          </div><span class="live-badge"><i class="live-dot"></i> Live</span>
+        </div>
+        <div class="candidate-grid" id="candidateList"></div>
+      </div>
     </section>
     <section class="panel" style="margin-top:20px">
-      <div class="panel-heading"><div><div class="mono">Hasil sementara</div><h2>Perolehan suara live</h2><p>Diperbarui otomatis setiap beberapa detik.</p></div><span class="live-badge"><i class="live-dot"></i> Live</span></div>
+      <div class="panel-heading">
+        <div>
+          <div class="mono">Hasil sementara</div>
+          <h2>Perolehan suara live</h2>
+          <p>Diperbarui otomatis setiap beberapa detik.</p>
+        </div><span class="live-badge"><i class="live-dot"></i> Live</span>
+      </div>
       <div class="candidate-list" id="resultList"></div>
     </section>
     <div class="toast" id="toast" role="status"></div>
@@ -83,4 +120,5 @@
     setInterval(refreshAll, 15000);
   </script>
 </body>
+
 </html>
