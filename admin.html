@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin | SuaraWarga</title>
+	<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+	<main class="admin-shell">
+		<nav class="admin-nav">
+			<div class="brand">
+				<div class="brand-mark">S</div>
+				<span>SuaraWarga <small style="color:var(--muted);font-size:10px">/ ADMIN</small></span>
+			</div>
+			<a class="back-link" href="index.html">← Halaman warga</a>
+			<button class="back-link hidden" id="logoutBtn" type="button" style="border:0;background:none;cursor:pointer">Keluar</button>
+		</nav>
+		<section class="panel login-gate" id="gateView">
+			<div class="card-title">
+				<div class="mono">Akses terbatas</div>
+				<h1>Masuk sebagai admin</h1>
+				
+			</div>
+			<form id="gateForm">
+				<div class="field">
+					<label for="gateKey">Kode admin</label>
+					<input id="gateKey" type="password" required autocomplete="off">
+				</div>
+				<p class="helper" id="gateError" style="color:#ad4939"></p>
+				<div class="form-actions" style="margin-top:14px">
+					<button class="btn" id="gateSubmit" type="submit">Masuk →</button>
+				</div>
+			</form>
+		</section>
+		<section id="dashboardView" class="hidden">
+			<header class="admin-header">
+				<div>
+					<div class="mono">Ruang kerja admin</div>
+					<h1>Data pemilu digital.</h1>
+					<p class="subhead">Kelola informasi yang akan dilihat warga secara terkontrol.</p>
+				</div>
+			</header>
+			
+			<div class="admin-grid">
+				<!-- 1. SESSION CONTROL PANEL -->
+				<section class="panel full-panel">
+					<div class="panel-heading">
+						<div>
+							<div class="mono">Kontrol sesi</div>
+							<h2>Sesi Voting</h2>
+						</div>
+						<div class="action-row">
+							<span class="status" id="sesiBadge">Memuat...</span>
+							<button class="btn" id="toggleSesiBtn" type="button" disabled>Memuat...</button>
+						</div>
+					</div>
+					<p id="sesiDescription">Mengambil status sesi saat ini...</p>
+				</section>
+
+				<!-- 2. CANDIDATE FORM PANEL -->
+				<section class="panel">
+					<div class="card-title">
+						<div class="mono">Data calon</div>
+						<h2 id="candidateFormTitle">Tambah calon</h2>
+						<p>Foto, nama, visi, dan misi akan tampil di halaman warga.</p>
+					</div>
+					<form id="candidateForm">
+						<div class="field">
+							<label for="candidatePhoto">Link foto (Google Drive atau URL gambar)</label>
+							<input id="candidatePhoto" type="text" placeholder="Tempel link share Google Drive, atau URL gambar" autocomplete="off">
+							<p class="helper" style="margin-top:6px;font-size:11px;color:var(--muted,#8a8a8a);line-height:1.5;">
+								Upload foto ke folder Drive kamu → klik kanan foto → Share → Copy link → tempel di sini.
+							</p>
+
+							<div id="photoPreviewContainer" style="display:none; margin-top:10px; align-items:center; gap:12px;">
+								<img id="photoPreview" alt="Preview Foto" style="width:52px; height:52px; border-radius:8px; object-fit:cover; border:1px solid var(--line); background:#f2f2f2;">
+								<div>
+									<div id="photoPreviewName" style="font-size:11px; font-weight:600; color:var(--ink);"></div>
+									<button type="button" id="removePhotoBtn" class="btn secondary small" style="margin-top:4px; padding:3px 8px; font-size:10px; color:#ad4939;">Hapus link foto</button>
+								</div>
+							</div>
+						</div>
+						<div class="form-grid" style="margin-top:14px">
+							<div class="field">
+								<label for="candidateName">Nama calon</label>
+								<input id="candidateName" required>
+							</div>
+							<div class="field">
+								<label for="candidateVision">Visi</label>
+								<input id="candidateVision" required>
+							</div>
+							<div class="field full">
+								<label for="candidateMission">Misi</label>
+								<textarea id="candidateMission" required rows="3" style="width:100%;border:1px solid var(--line);border-radius:7px;padding:11px 12px;resize:vertical;color:var(--ink);font:inherit;font-size:12px"></textarea>
+							</div>
+						</div>
+						<div class="form-actions" style="margin-top:14px; display:flex; gap:10px;">
+							<button class="btn secondary" id="cancelCandidate" type="button" hidden>Batal</button>
+							<button class="btn" id="candidateSubmit" type="submit">+ Tambah calon</button>
+						</div>
+					</form>
+				</section>
+
+				<!-- 3. VOTER FORM PANEL -->
+				<section class="panel">
+					<div class="card-title">
+						<div class="mono">Pendataan warga</div>
+						<h2 id="voterFormTitle">Tambah warga</h2>
+						<p>Kode unik akan digenerate otomatis oleh sistem.</p>
+					</div>
+					<form id="voterForm">
+						<div class="field">
+							<label for="voterName">Nama warga</label>
+							<input id="voterName" required>
+						</div>
+						<div class="form-actions" style="margin-top:14px; display:flex; gap:10px;">
+							<button class="btn secondary" id="cancelVoter" type="button" hidden>Batal</button>
+							<button class="btn" id="voterSubmit" type="submit">+ Tambah warga</button>
+						</div>
+					</form>
+				</section>
+
+				<!-- 4. CANDIDATE TABLE -->
+				<section class="panel full-panel">
+					<div class="panel-heading">
+						<div>
+							<div class="mono">Database calon</div>
+							<h2>Daftar calon</h2>
+						</div>
+						<div class="action-row">
+							<button class="btn secondary small" id="exportCandidates" type="button">Export Excel</button>
+						</div>
+					</div>
+					<div class="admin-table">
+						<table>
+							<thead>
+								<tr>
+									<th>Calon</th>
+									<th>Visi</th>
+									<th>Misi</th>
+									<th>Suara</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="candidateTable">
+								<tr><td colspan="5" class="empty">Memuat data...</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+
+				<!-- 5. VOTER TABLE -->
+				<section class="panel full-panel">
+					<div class="panel-heading">
+						<div>
+							<div class="mono">Database warga</div>
+							<h2>Daftar warga terdaftar</h2>
+						</div>
+						<div class="action-row">
+							<span class="status" id="voterCount">0 warga</span>
+							<button class="btn secondary small" id="exportVoters" type="button">Export Excel</button>
+						</div>
+					</div>
+					<div class="admin-table">
+						<table>
+							<thead>
+								<tr>
+									<th>Warga</th>
+									<th>Kode Unik</th>
+									<th>Status voting</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="voterTable">
+								<tr><td colspan="4" class="empty">Memuat data...</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			</div>
+		</section>
+		<div class="toast" id="toast" role="status"></div>
+	</main>
+
+	<script>
+		// ── Config ──
+		const API_URL = 'https://script.google.com/macros/s/AKfycbxts7nzr4eZdcXMXD_vbL05oRWOTrKho70G7GNxYwW4OASXPcl6G3mPeaVa6WRQ2IvNrQ/exec';
+		const $ = id => document.getElementById(id);
+		const toast = (msg) => { 
+			$('toast').textContent = msg; 
+			$('toast').classList.add('show'); 
+			setTimeout(() => $('toast').classList.remove('show'), 3000); 
+		};
+		const initials = name => (name || '').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+		// ── Admin key (gerbang login) ──
+		let ADMIN_KEY = localStorage.getItem('suaraWargaAdminKey') || '';
+
+		// ── State ──
+		let candidates = [];
+		let voters = [];
+		let sesiStatus = 'tutup';
+		let candidateEditing = null; // noUrut of candidate being edited
+		let voterEditing = null;     // kode of voter being edited
+
+		// ── API Helpers ──
+		async function apiGet(action, extraParams = {}) {
+			const params = new URLSearchParams({ action, ...extraParams });
+			const res = await fetch(`${API_URL}?${params}`);
+			return res.json();
+		}
+		async function apiPost(payload) {
+			const res = await fetch(API_URL, { 
+				method: 'POST', 
+				body: JSON.stringify({ ...payload, adminKey: ADMIN_KEY }) 
+			});
+			return res.json();
+		}
+
+		// ── Gerbang login admin ──
+		function showGate() {
+			$('gateView').classList.remove('hidden');
+			$('dashboardView').classList.add('hidden');
+			$('logoutBtn').classList.add('hidden');
+		}
+		function showDashboard() {
+			$('gateView').classList.add('hidden');
+			$('dashboardView').classList.remove('hidden');
+			$('logoutBtn').classList.remove('hidden');
+		}
+
+		$('gateForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const key = $('gateKey').value.trim();
+			if (!key) return;
+			const btn = $('gateSubmit');
+			btn.disabled = true; btn.textContent = 'Memeriksa…';
+			try {
+				const check = await (await fetch(`${API_URL}?${new URLSearchParams({ action: 'getVoters', adminKey: key })}`)).json();
+				if (check.error === 'Unauthorized') {
+					$('gateError').textContent = 'Kode admin salah.';
+					btn.disabled = false; btn.textContent = 'Masuk →';
+					return;
+				}
+				ADMIN_KEY = key;
+				localStorage.setItem('suaraWargaAdminKey', key);
+				$('gateError').textContent = '';
+				showDashboard();
+				init();
+			} catch (err) {
+				$('gateError').textContent = 'Gagal menghubungi server. Coba lagi.';
+			} finally {
+				btn.disabled = false; btn.textContent = 'Masuk →';
+			}
+		});
+
+		$('logoutBtn').addEventListener('click', () => {
+			ADMIN_KEY = '';
+			localStorage.removeItem('suaraWargaAdminKey');
+			showGate();
+		});
+
+		// ── Photo link → preview ──
+		// Meniru logic extractDriveFileId() di backend, supaya preview di admin
+		// menunjukkan hasil yang sama persis dengan yang akan dilihat warga.
+		function extractDriveFileIdClient(url) {
+			if (!url) return null;
+			url = String(url).trim();
+			if (/^[a-zA-Z0-9_-]{20,}$/.test(url) && url.indexOf('/') === -1 && url.indexOf('http') !== 0) {
+				return url;
+			}
+			const patterns = [
+				/\/file\/d\/([a-zA-Z0-9_-]+)/,
+				/[?&]id=([a-zA-Z0-9_-]+)/,
+				/\/d\/([a-zA-Z0-9_-]+)/
+			];
+			for (const p of patterns) {
+				const m = url.match(p);
+				if (m && m[1]) return m[1];
+			}
+			return null;
+		}
+		function driveLinkToPreviewUrl(link) {
+			const id = extractDriveFileIdClient(link);
+			if (!id) return link; // bukan link Drive, kemungkinan URL gambar biasa
+			return `https://lh3.googleusercontent.com/d/${id}`;
+		}
+
+		function updatePhotoPreview() {
+			const raw = $('candidatePhoto').value.trim();
+			if (!raw) {
+				$('photoPreviewContainer').style.display = 'none';
+				return;
+			}
+			const previewUrl = driveLinkToPreviewUrl(raw);
+			const img = $('photoPreview');
+			img.src = previewUrl;
+			$('photoPreviewName').textContent = 'Pratinjau foto';
+			$('photoPreviewContainer').style.display = 'flex';
+			img.onerror = () => {
+				$('photoPreviewName').textContent = '⚠ Link tidak bisa dimuat / belum publik';
+			};
+			img.onload = () => {
+				$('photoPreviewName').textContent = 'Pratinjau foto';
+			};
+		}
+		$('candidatePhoto').addEventListener('input', updatePhotoPreview);
+		$('removePhotoBtn').addEventListener('click', () => {
+			$('candidatePhoto').value = '';
+			$('photoPreviewContainer').style.display = 'none';
+		});
+
+		// ── Session Control ──
+		async function loadSesi() {
+			try {
+				const response = await apiGet('getStatusSesi');
+				sesiStatus = response.status || response.sesi || 'tutup';
+				renderSesi();
+			} catch (err) {
+				console.error(err);
+				$('sesiDescription').textContent = 'Gagal memuat status sesi.';
+			}
+		}
+
+		async function toggleSesi() { 
+			const btn = $('toggleSesiBtn');
+			btn.disabled = true;
+			btn.textContent = 'Memproses...';
+			
+			try {
+				const response = await apiPost({ action: 'toggleSesi' });
+				if (response.success || response.status === 'success') {
+					sesiStatus = (response.status === 'buka' || response.status === 'tutup') 
+						? response.status 
+						: (sesiStatus === 'buka' ? 'tutup' : 'buka');
+					renderSesi();
+					toast(`Sesi voting berhasil ${sesiStatus === 'buka' ? 'dibuka' : 'ditutup'}.`);
+				} else {
+					toast('Gagal mengubah status sesi.');
+					renderSesi();
+				}
+			} catch (err) {
+				console.error(err);
+				toast('Terjadi kesalahan jaringan saat mengubah sesi.');
+				renderSesi();
+			}
+		}
+
+		function renderSesi() {
+			const badge = $('sesiBadge');
+			const btn = $('toggleSesiBtn');
+			const desc = $('sesiDescription');
+
+			btn.disabled = false;
+
+			if (sesiStatus === 'buka') {
+				badge.textContent = '● Sesi Dibuka';
+				badge.style.backgroundColor = 'var(--green, #d1f5d3)';
+				badge.style.color = '#ffffff';
+				
+				btn.textContent = 'Tutup Sesi Voting';
+				btn.className = 'btn danger';
+				
+				desc.textContent = 'Warga dapat melakukan login dan memberikan suara mereka saat ini.';
+			} else {
+				badge.textContent = 'Sesi Ditutup';
+				badge.style.backgroundColor = 'var(--coral, #fce4e4)';
+				badge.style.color = '#ffffff';
+				
+				btn.textContent = 'Buka Sesi Voting';
+				btn.className = 'btn'; 
+				
+				desc.textContent = 'Warga tidak dapat melakukan login. Buka sesi agar warga mulai bisa memilih.';
+			}
+		}
+
+		// ── Candidate CRUD ──
+		async function loadCalon() { 
+			try {
+				const response = await apiGet('getCalon');
+				candidates = response.calon || response.data || [];
+				renderCalon();
+			} catch (err) {
+				console.error(err);
+				$('candidateTable').innerHTML = '<tr><td colspan="5" class="empty">Gagal memuat data calon.</td></tr>';
+			}
+		}
+
+		function renderCalon() {
+			const tbody = $('candidateTable');
+			if (!candidates.length) {
+				tbody.innerHTML = '<tr><td colspan="5" class="empty">Belum ada calon.</td></tr>';
+				return;
+			}
+			
+			tbody.innerHTML = candidates.map(candidate => {
+				const photoHtml = candidate.foto 
+					? `<img src="${candidate.foto}" alt="Foto ${candidate.nama}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;">` 
+					: `<span class="avatar" style="display:inline-grid;width:40px;height:40px;vertical-align:middle;margin-right:10px;">${initials(candidate.nama)}</span>`;
+					
+				return `
+					<tr>
+						<td>${photoHtml} <strong>${candidate.nama}</strong></td>
+						<td>${candidate.visi}</td>
+						<td>${candidate.misi}</td>
+						<td>${candidate.suara || 0}</td>
+						<td>
+							<div class="action-row">
+								<button class="btn secondary small" onclick="editCalonUI(${candidate.noUrut})">Edit</button>
+								<button class="btn danger small" onclick="deleteCalonAPI(${candidate.noUrut})">Hapus</button>
+							</div>
+						</td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		function editCalonUI(noUrut) {
+			const candidate = candidates.find(c => c.noUrut === noUrut);
+			if (!candidate) return;
+			
+			candidateEditing = noUrut;
+			
+			$('candidateName').value = candidate.nama || '';
+			$('candidateVision').value = candidate.visi || '';
+			$('candidateMission').value = candidate.misi || '';
+			$('candidatePhoto').value = candidate.foto || '';
+			updatePhotoPreview();
+			
+			$('candidateFormTitle').textContent = 'Edit calon';
+			$('candidateSubmit').textContent = 'Simpan perubahan';
+			$('cancelCandidate').hidden = false;
+			
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+
+		async function submitCalon(e) {
+			e.preventDefault();
+			
+			const btn = $('candidateSubmit');
+			btn.disabled = true;
+			btn.textContent = 'Menyimpan...';
+			
+			const payload = {
+				nama: $('candidateName').value.trim(),
+				visi: $('candidateVision').value.trim(),
+				misi: $('candidateMission').value.trim(),
+				foto: $('candidatePhoto').value.trim()
+			};
+			
+			try {
+				if (candidateEditing) {
+					payload.action = 'editCalon';
+					payload.noUrut = candidateEditing;
+				} else {
+					payload.action = 'tambahCalon';
+				}
+				
+				const response = await apiPost(payload);
+				
+				if (response.success || response.status === 'success') {
+					let msg = candidateEditing ? 'Data calon diperbarui.' : 'Calon baru berhasil ditambahkan.';
+					if (response.fotoWarning) msg += ' ⚠ ' + response.fotoWarning;
+					toast(msg);
+					resetCalonForm();
+					await loadCalon();
+				} else {
+					toast(response.message || response.error || response.fotoError || 'Gagal menyimpan calon.');
+				}
+			} catch (err) {
+				console.error(err);
+				toast('Terjadi kesalahan jaringan.');
+			} finally {
+				btn.disabled = false;
+				btn.textContent = candidateEditing ? 'Simpan perubahan' : '+ Tambah calon';
+			}
+		}
+
+		async function deleteCalonAPI(noUrut) {
+			if (!confirm('Yakin ingin menghapus calon ini?')) return;
+			
+			try {
+				const response = await apiPost({ action: 'hapusCalon', noUrut: noUrut });
+				if (response.success || response.status === 'success') {
+					toast('Data calon dihapus.');
+					await loadCalon();
+				} else {
+					toast(response.error || 'Gagal menghapus calon.');
+				}
+			} catch (err) {
+				console.error(err);
+				toast('Terjadi kesalahan jaringan saat menghapus calon.');
+			}
+		}
+
+		function resetCalonForm() {
+			$('candidateForm').reset();
+			candidateEditing = null;
+			$('candidatePhoto').value = '';
+			$('photoPreviewContainer').style.display = 'none';
+			$('candidateFormTitle').textContent = 'Tambah calon';
+			$('candidateSubmit').textContent = '+ Tambah calon';
+			$('cancelCandidate').hidden = true;
+		}
+
+		// ── Voter CRUD ──
+		async function loadVoters() { 
+			try {
+				const response = await apiGet('getVoters', { adminKey: ADMIN_KEY });
+				voters = response.voters || response.data || [];
+				renderVoters();
+			} catch (err) {
+				console.error(err);
+				$('voterTable').innerHTML = '<tr><td colspan="4" class="empty">Gagal memuat data warga.</td></tr>';
+			}
+		}
+
+		function renderVoters() {
+			const tbody = $('voterTable');
+			$('voterCount').textContent = `${voters.length} warga`;
+			
+			if (!voters.length) {
+				tbody.innerHTML = '<tr><td colspan="4" class="empty">Belum ada warga terdaftar.</td></tr>';
+				return;
+			}
+			
+			tbody.innerHTML = voters.map(voter => `
+				<tr>
+					<td><strong>${voter.nama}</strong></td>
+					<td><code style="font-family:monospace;letter-spacing:1px;background:var(--paper, #f0f0f0);padding:2px 6px;border-radius:4px;border:1px solid var(--line, #ddd);">${voter.kode}</code></td>
+					<td><span class="status">${voter.sudahVoting ? 'Sudah memilih' : 'Belum memilih'}</span></td>
+					<td>
+						<div class="action-row">
+							<button class="btn secondary small" onclick="editVoterUI('${voter.kode}')">Edit</button>
+							<button class="btn danger small" onclick="deleteVoterAPI('${voter.kode}')">Hapus</button>
+						</div>
+					</td>
+				</tr>
+			`).join('');
+		}
+
+		function editVoterUI(kode) {
+			const voter = voters.find(v => v.kode === kode);
+			if (!voter) return;
+			
+			voterEditing = kode;
+			$('voterName').value = voter.nama || '';
+			
+			$('voterFormTitle').textContent = 'Edit warga';
+			$('voterSubmit').textContent = 'Simpan perubahan';
+			$('cancelVoter').hidden = false;
+		}
+
+		async function submitVoter(e) {
+			e.preventDefault();
+			
+			const btn = $('voterSubmit');
+			btn.disabled = true;
+			btn.textContent = 'Menyimpan...';
+			
+			const payload = {
+				nama: $('voterName').value.trim()
+			};
+			
+			try {
+				if (voterEditing) {
+					payload.action = 'editVoter';
+					payload.kode = voterEditing;
+				} else {
+					payload.action = 'tambahVoter';
+				}
+				
+				const response = await apiPost(payload);
+				
+				if (response.success || response.status === 'success') {
+					if (!voterEditing && response.kode) {
+						toast(`Warga ditambahkan. Kode unik: ${response.kode}`);
+					} else {
+						toast('Data warga diperbarui.');
+					}
+					resetVoterForm();
+					await loadVoters();
+				} else {
+					toast(response.message || response.error || 'Gagal menyimpan warga.');
+				}
+			} catch (err) {
+				console.error(err);
+				toast('Terjadi kesalahan jaringan.');
+			} finally {
+				btn.disabled = false;
+				btn.textContent = voterEditing ? 'Simpan perubahan' : '+ Tambah warga';
+			}
+		}
+
+		async function deleteVoterAPI(kode) {
+			if (!confirm('Yakin ingin menghapus warga ini?')) return;
+			
+			try {
+				const response = await apiPost({ action: 'hapusVoter', kode: kode });
+				if (response.success || response.status === 'success') {
+					toast('Data warga dihapus.');
+					await loadVoters();
+				} else {
+					toast(response.error || 'Gagal menghapus warga.');
+				}
+			} catch (err) {
+				console.error(err);
+				toast('Terjadi kesalahan jaringan saat menghapus warga.');
+			}
+		}
+
+		function resetVoterForm() {
+			$('voterForm').reset();
+			voterEditing = null;
+			$('voterFormTitle').textContent = 'Tambah warga';
+			$('voterSubmit').textContent = '+ Tambah warga';
+			$('cancelVoter').hidden = true;
+		}
+
+		// ── Export ──
+		function downloadCsv(filename, headers, rows) { 
+			const escapeCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`; 
+			const csv = '\ufeff' + [headers, ...rows].map(row => row.map(escapeCell).join(',')).join('\r\n'); 
+			const link = document.createElement('a'); 
+			link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); 
+			link.download = filename; 
+			link.click(); 
+			URL.revokeObjectURL(link.href); 
+		}
+		
+		function exportCandidates() {
+			downloadCsv('data-calon.csv', 
+				['No. Urut', 'Nama Calon', 'Visi', 'Misi', 'Jumlah Suara', 'Foto URL'],
+				candidates.map(c => [c.noUrut, c.nama, c.visi, c.misi, c.suara, c.foto || '-'])
+			);
+			toast('Data calon berhasil diekspor.');
+		}
+		
+		function exportVoters() {
+			downloadCsv('data-warga.csv',
+				['Nama Warga', 'Kode Unik', 'Status Voting'],
+				voters.map(v => [v.nama, v.kode, v.sudahVoting ? 'Sudah memilih' : 'Belum memilih'])
+			);
+			toast('Data warga berhasil diekspor.');
+		}
+
+		// ── Event Listeners ──
+		$('toggleSesiBtn').addEventListener('click', toggleSesi);
+		$('candidateForm').addEventListener('submit', submitCalon);
+		$('voterForm').addEventListener('submit', submitVoter);
+		$('cancelCandidate').addEventListener('click', resetCalonForm);
+		$('cancelVoter').addEventListener('click', resetVoterForm);
+		$('exportCandidates').addEventListener('click', exportCandidates);
+		$('exportVoters').addEventListener('click', exportVoters);
+
+		// ── Init ──
+		async function init() {
+			try {
+				await Promise.all([loadCalon(), loadVoters(), loadSesi()]);
+			} catch (err) {
+				console.error(err);
+				toast('Gagal memuat data. Pastikan URL API sudah benar.');
+			}
+		}
+		if (ADMIN_KEY) { showDashboard(); init(); } else { showGate(); }
+	</script>
+</body>
+</html>

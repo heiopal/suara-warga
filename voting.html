@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting | SuaraWarga</title>
+  <link rel="stylesheet" href="voting.css">
+</head>
+<body>
+  <main class="voting-shell">
+    <nav class="simple-nav"><div class="brand"><div class="brand-mark">S</div><span>SuaraWarga</span></div><a class="admin-link" href="index.html">← Kembali ke beranda</a></nav>
+
+    <section class="panel state-panel hidden" id="closedState">
+      <div class="mono" style="color:var(--coral)">Sesi ditutup</div>
+      <h1>Voting belum atau sudah tidak dibuka</h1>
+      <p class="subhead">Pantau hasil sementara di beranda, atau hubungi admin untuk info jadwal voting.</p>
+      <a class="btn" href="index.html">Lihat hasil sementara</a>
+    </section>
+
+    <section class="panel" id="verifyState">
+      <div class="card-title"><div class="mono">Langkah 1 dari 2</div><h1>Verifikasi identitas</h1><p class="subhead">Masukkan nama lengkap dan kode unik yang diberikan admin saat pendataan.</p></div>
+      <form id="verifyForm" class="form-grid">
+        <div class="field full"><label>Nama Lengkap</label><input type="text" id="vNama" required placeholder="Sesuai data admin" autocomplete="name"></div>
+        <div class="field full"><label>Kode Unik</label><input type="text" id="vKode" required placeholder="Contoh: 7F3K9" style="text-transform:uppercase"></div>
+      </form>
+      <p class="helper" id="verifyError" style="color:#ad4939"></p>
+      <div class="form-actions"><button class="btn" id="verifyBtn" type="submit" form="verifyForm">Lanjut memilih →</button></div>
+    </section>
+
+    <section class="panel hidden" id="chooseState">
+      <div class="card-title"><div class="mono">Langkah 2 dari 2</div><h1>Pilih calon</h1><p class="subhead">Halo, <strong id="voterName"></strong>. Pilih satu calon, lalu konfirmasi pilihanmu.</p></div>
+      <div class="candidate-list" id="chooseList"></div>
+      <p class="helper" id="chooseError" style="color:#ad4939"></p>
+      <div class="form-actions"><button class="btn secondary" id="backBtn" type="button">← Ubah data</button><button class="btn" id="submitVoteBtn" type="button" disabled>Kirim pilihan</button></div>
+    </section>
+
+    <section class="panel state-panel hidden" id="doneState">
+      <div class="mono" style="color:var(--green)">Berhasil</div>
+      <h1>Terima kasih, <span id="doneName"></span>!</h1>
+      <p class="subhead">Suaramu untuk <strong id="doneCalon"></strong> sudah tercatat.</p>
+      <a class="btn" href="index.html">Lihat hasil sementara →</a>
+    </section>
+
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwMPKOs7kBcwGr7TsmHCpsh0RZEz5-iVMMNiEHwvapurmiO-xaRHptuFaIPXVjyMjZ3vg/exec';
+    const $ = id => document.getElementById(id);
+    const initials = name => (name || '').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const avatarHtml = c => c.foto ? `<img class="avatar avatar-photo" src="${c.foto}" alt="Foto ${c.nama}">` : `<div class="avatar">${initials(c.nama)}</div>`;
+    function toast(msg) { $('toast').textContent = msg; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2800); }
+
+    let currentVoter = null;
+    let selectedCalon = null;
+
+    async function postAPI(payload) { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }); return res.json(); }
+    async function getStatusSesi() { const res = await fetch(`${API_URL}?action=getStatusSesi`); return res.json(); }
+
+    function showState(id) { ['closedState', 'verifyState', 'chooseState', 'doneState'].forEach(s => $(s).classList.toggle('hidden', s !== id)); }
+
+    async function init() {
+      try {
+        const status = await getStatusSesi();
+        if (status.status !== 'buka') { showState('closedState'); return; }
+        showState('verifyState');
+      } catch (err) {
+        toast('Gagal memuat status sesi.');
+        showState('closedState');
+      }
+    }
+
+    $('verifyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nama = $('vNama').value.trim();
+      const kode = $('vKode').value.trim();
+      if (!nama || !kode) return;
+      $('verifyBtn').disabled = true; $('verifyBtn').textContent = 'Memeriksa…';
+      try {
+        const result = await postAPI({ action: 'verifikasiVoter', nama, kode });
+        if (result.valid) {
+          currentVoter = { nama, kode };
+          renderChooseList(result.calon);
+          $('voterName').textContent = nama;
+          $('verifyError').textContent = '';
+          showState('chooseState');
+        } else {
+          $('verifyError').textContent = result.pesan || 'Nama atau kode unik tidak cocok.';
+        }
+      } catch (err) {
+        $('verifyError').textContent = 'Gagal menghubungi server. Coba lagi.';
+      } finally {
+        $('verifyBtn').disabled = false; $('verifyBtn').textContent = 'Lanjut memilih →';
+      }
+    });
+
+    function renderChooseList(list) {
+      selectedCalon = null;
+      $('submitVoteBtn').disabled = true;
+      $('chooseList').innerHTML = list.map(c => `<div class="candidate vote-option" data-id="${c.noUrut}" data-nama="${c.nama}" role="button" tabindex="0">${avatarHtml(c)}<div><h3>${c.noUrut}. ${c.nama}</h3><p>${(c.visi || '').slice(0, 80)}${c.visi && c.visi.length > 80 ? '…' : ''}</p></div><div class="mono" style="color:var(--muted)">Pilih</div></div>`).join('');
+      $('chooseList').querySelectorAll('.vote-option').forEach(el => {
+        el.addEventListener('click', () => selectCandidate(el));
+        el.addEventListener('keypress', (e) => { if (e.key === 'Enter') selectCandidate(el); });
+      });
+    }
+
+    function selectCandidate(el) {
+      $('chooseList').querySelectorAll('.vote-option').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedCalon = el.dataset.id;
+      $('submitVoteBtn').disabled = false;
+      $('chooseError').textContent = '';
+    }
+
+    $('backBtn').addEventListener('click', () => showState('verifyState'));
+
+    $('submitVoteBtn').addEventListener('click', async () => {
+      if (!selectedCalon || !currentVoter) return;
+      $('submitVoteBtn').disabled = true; $('submitVoteBtn').textContent = 'Mengirim…';
+      try {
+        const result = await postAPI({ action: 'vote', nama: currentVoter.nama, kode: currentVoter.kode, calonId: selectedCalon });
+        if (result.success) {
+          const chosenEl = $('chooseList').querySelector('.selected');
+          $('doneName').textContent = currentVoter.nama;
+          $('doneCalon').textContent = chosenEl ? chosenEl.dataset.nama : '';
+          showState('doneState');
+        } else {
+          $('chooseError').textContent = result.pesan || 'Gagal mengirim suara.';
+          $('submitVoteBtn').disabled = false; $('submitVoteBtn').textContent = 'Kirim pilihan';
+        }
+      } catch (err) {
+        $('chooseError').textContent = 'Gagal menghubungi server. Coba lagi.';
+        $('submitVoteBtn').disabled = false; $('submitVoteBtn').textContent = 'Kirim pilihan';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

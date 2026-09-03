@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuaraWarga | Pemilu Digital</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <main class="citizen-shell">
+    <nav class="simple-nav"><div class="brand"><div class="brand-mark">S</div><span>SuaraWarga</span></div></nav>
+    <section class="hero"><div><div class="mono">Pemilu Digital</div><h1>Suara warga,<br>arah bersama.</h1><p class="subhead">Pantau profil calon dan hasil perolehan suara secara live. Pemungutan suara dilakukan di halaman voting terpisah menggunakan nama dan kode unik yang diberikan admin.</p></div><div class="hero-art"><div class="mono" id="sesiBadge" style="color:var(--yellow)">Memuat status sesi…</div><h2 id="heroTotal">Menghitung hasil sementara…</h2><p id="heroLeader" class="hero-leader">- suara</p></div></section>
+    <section class="content-grid">
+      <div class="panel registration-card" id="statusPanel">
+        <div class="card-title"><div class="mono">Status voting</div><h2>Ikut memilih?</h2><p id="sesiText">Memuat status sesi voting…</p></div>
+        <div class="form-actions" style="justify-content:flex-start">
+          <a class="btn hidden" id="voteCta" href="voting.html">Ke halaman voting →</a>
+        </div>
+        <p class="helper">Belum terdaftar atau lupa kode unik? Hubungi admin untuk pendataan.</p>
+      </div>
+      <div class="panel"><div class="panel-heading"><div><div class="mono">Kenali calon</div><h2>Calon</h2><p>Pelajari visi dan misi sebelum menentukan pilihan.</p></div><span class="live-badge"><i class="live-dot"></i> Live</span></div><div class="candidate-grid" id="candidateList"></div></div>
+    </section>
+    <section class="panel" style="margin-top:20px">
+      <div class="panel-heading"><div><div class="mono">Hasil sementara</div><h2>Perolehan suara live</h2><p>Diperbarui otomatis setiap beberapa detik.</p></div><span class="live-badge"><i class="live-dot"></i> Live</span></div>
+      <div class="candidate-list" id="resultList"></div>
+    </section>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxts7nzr4eZdcXMXD_vbL05oRWOTrKho70G7GNxYwW4OASXPcl6G3mPeaVa6WRQ2IvNrQ/exec';
+    const $ = id => document.getElementById(id);
+    const initials = name => (name || '').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2800); }
+    function photo(c) { return c.foto ? `<img class="candidate-photo" src="${c.foto}" alt="Foto ${c.nama}">` : `<div class="candidate-photo placeholder">${initials(c.nama)}</div>`; }
+
+    async function fetchCalon() { const res = await fetch(`${API_URL}?action=getCalon`); return res.json(); }
+    async function fetchStatusSesi() { const res = await fetch(`${API_URL}?action=getStatusSesi`); return res.json(); }
+
+    function renderCandidateInfo(list) {
+      $('candidateList').innerHTML = list.map((c, i) => `<article class="candidate-card"><div class="candidate-number">${c.noUrut ?? i + 1}</div><div>${photo(c)}</div><div class="candidate-info"><h3>${c.nama}</h3><p class="candidate-message"><strong>Visi</strong>${c.visi}</p><p class="candidate-message"><strong>Misi</strong>${(c.misi || '-').toString().replace(/\n/g, '<br>')}</p></div></article>`).join('');
+    }
+
+    function renderResults(list) {
+      const sorted = [...list].sort((a, b) => b.suara - a.suara);
+      $('resultList').innerHTML = sorted.length ? sorted.map(c => `<div class="candidate"><div class="avatar">${initials(c.nama)}</div><div><h3>${c.nama}</h3><div class="bar"><span style="width:${c.persen}%"></span></div></div><div class="vote-count"><strong>${c.persen}%</strong><span>${c.suara} suara</span></div></div>`).join('') : '<p class="helper">Belum ada suara masuk.</p>';
+      const total = list.reduce((sum, c) => sum + (c.suara || 0), 0);
+      $('heroTotal').textContent = `Total suara masuk ada ${total}`;
+      const maxSuara = sorted.length ? sorted[0].suara : 0;
+      const leaders = sorted.filter(c => c.suara === maxSuara);
+      let leaderText;
+      if (!total) {
+        leaderText = 'Belum ada suara masuk';
+      } else if (leaders.length > 2) {
+        leaderText = `${leaders.length} calon seri sementara dengan ${maxSuara} suara`;
+      } else if (leaders.length === 2) {
+        leaderText = `${leaders[0].nama} & ${leaders[1].nama} seri sementara dengan ${maxSuara} suara`;
+      } else {
+        leaderText = `${sorted[0].nama} unggul sementara dengan perolehan ${sorted[0].suara} suara`;
+      }
+      $('heroLeader').textContent = leaderText;
+    }
+
+    function renderSesi(status) {
+      const buka = status.status === 'buka';
+      $('sesiBadge').innerHTML = buka ? '<i class="live-dot"></i> Sesi voting dibuka' : 'Sesi voting ditutup';
+      $('sesiText').textContent = buka ? 'Voting sedang berlangsung. Gunakan nama dan kode unik dari admin untuk memilih.' : 'Voting belum dibuka atau sudah selesai. Pantau halaman ini untuk info lebih lanjut.';
+      $('voteCta').classList.toggle('hidden', !buka);
+    }
+
+    async function refreshAll() {
+      try {
+        const [calonRes, sesiRes] = await Promise.all([fetchCalon(), fetchStatusSesi()]);
+        const list = Array.isArray(calonRes) ? calonRes : (calonRes.calon || []);
+        renderCandidateInfo(list);
+        renderResults(list);
+        renderSesi(sesiRes || { status: 'tutup' });
+      } catch (err) {
+        toast('Gagal memuat data terbaru.');
+      }
+    }
+
+    refreshAll();
+    setInterval(refreshAll, 15000);
+  </script>
+</body>
+</html>
