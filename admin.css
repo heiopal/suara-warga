@@ -22,6 +22,7 @@ button { cursor: pointer; }
 
 .admin-shell { max-width: 1240px; margin: 0 auto; padding: 28px 34px 70px; }
 .admin-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 58px; }
+.nav-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
 .brand { display: flex; gap: 11px; align-items: center; color: var(--ink); font-size: 17px; font-weight: 800; letter-spacing: -.04em; }
 .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; color: var(--green-dark); background: var(--yellow); font-weight: 800; }
 .admin-nav .brand { padding: 0; }
@@ -45,6 +46,7 @@ h3 { margin-bottom: 5px; font-size: 14px; }
 .voter-actions { display: flex; align-items: flex-end; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .search-field { width: min(230px, 100%); }
 .search-field input { min-height: 38px; padding: 8px 11px; }
+.voter-search { display: block; width: min(240px, 100%); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -121,7 +123,7 @@ tbody tr:hover { background: #f8fcf9; }
   .panel-heading { display: block; }
   .panel-heading .status { margin-top: 12px; }
   .voter-actions { align-items: stretch; justify-content: stretch; margin-top: 14px; }
-  .search-field { width: 100%; }
+  .voter-search { width: 100%; }
   .voter-actions .action-row { justify-content: space-between; }
   .form-actions { flex-wrap: wrap; }
   .sesi-controls { width: 100%; margin-top: 14px; }

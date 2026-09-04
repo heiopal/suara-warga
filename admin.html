@@ -15,9 +15,11 @@
 				<div class="brand-mark">S</div>
 				<span>SuaraWarga <small style="color:var(--muted);font-size:10px">/ ADMIN</small></span>
 			</div>
-			<a class="back-link" href="index.html">← Halaman warga</a>
-			<button class="back-link hidden" id="logoutBtn" type="button"
-				style="border:0;background:none;cursor:pointer">Keluar</button>
+			<div class="nav-actions">
+				<a class="back-link" href="index.html">← Halaman warga</a>
+				<button class="back-link hidden" id="logoutBtn" type="button"
+					style="border:0;background:none;cursor:pointer">Keluar</button>
+			</div>
 		</nav>
 		<section class="panel login-gate" id="gateView">
 			<div class="card-title">
@@ -172,7 +174,7 @@
 							<h2>Daftar warga terdaftar</h2>
 						</div>
 						<div class="voter-actions">
-							<label class="search-field" for="voterSearch">
+							<label class="search-field voter-search" for="voterSearch">
 								<span class="sr-only">Cari nama warga</span>
 								<input id="voterSearch" type="search" placeholder="Cari nama warga..."
 									autocomplete="off">
